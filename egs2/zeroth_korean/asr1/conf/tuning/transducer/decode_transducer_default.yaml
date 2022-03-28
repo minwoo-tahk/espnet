@@ -1,0 +1,6 @@
+lm_weight: 0.
+ctc_weight: 0.3
+beam_size: 20
+
+transducer_conf:
+  search_type: default

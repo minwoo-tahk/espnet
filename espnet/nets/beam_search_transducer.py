@@ -259,6 +259,8 @@ class BeamSearchTransducer:
         beam = min(self.beam_size, self.vocab_size)
         beam_k = min(beam, (self.vocab_size - 1))
 
+        print(f"beam: {beam}")
+        print(f"beam_k: {beam_k}")
         dec_state = self.decoder.init_state(1)
 
         kept_hyps = [Hypothesis(score=0.0, yseq=[self.blank_id], dec_state=dec_state)]

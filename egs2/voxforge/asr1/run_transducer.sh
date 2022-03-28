@@ -11,14 +11,17 @@ valid_set="dt_${lang}"
 test_sets="dt_${lang} et_${lang}"
 
 # asr_config=conf/train_asr_rnn.yaml
-asr_config=conf/tuning/transducer/train_asr_rnn_transducer.yaml
+# asr_config=conf/tuning/transducer/train_asr_rnn_transducer.yaml
 # asr_config=conf/tuning/transducer/train_asr_rnn_transducer_win400_hop160.yaml
-# inference_config=conf/decode_asr.yaml
+# asr_config=conf/tuning/transducer/train_asr_rnn_transducer_adam.yaml
+asr_config=conf/tuning/transducer/train_asr_rnn_transducer_adam_aux.yaml
 inference_config=conf/tuning/transducer/decode_transducer_default.yaml
 
 # FIXME(kamo):
 # The results with norm_vars=True is odd.
 # I'm not sure this is due to bug.
+    # --stop_stage 11 \
+    # --inference_nj 1 \
 
 ./asr.sh \
     --stage 11 \

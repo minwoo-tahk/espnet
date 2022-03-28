@@ -40,6 +40,7 @@ from espnet2.asr.encoder.contextual_block_conformer_encoder import (
 )
 from espnet2.asr.encoder.vgg_rnn_encoder import VGGRNNEncoder
 from espnet2.asr.encoder.wav2vec2_encoder import FairSeqWav2Vec2Encoder
+from espnet2.asr.transducer.transducer_encoder import TransducerEncoder
 from espnet2.asr.espnet_model import ESPnetASRModel
 from espnet2.asr.frontend.abs_frontend import AbsFrontend
 from espnet2.asr.frontend.default import DefaultFrontend
@@ -121,6 +122,7 @@ encoder_choices = ClassChoices(
         contextual_block_conformer=ContextualBlockConformerEncoder,
         vgg_rnn=VGGRNNEncoder,
         rnn=RNNEncoder,
+        transducer=TransducerEncoder,
         wav2vec2=FairSeqWav2Vec2Encoder,
         hubert=FairseqHubertEncoder,
         hubert_pretrain=FairseqHubertPretrainEncoder,
@@ -226,6 +228,13 @@ class ASRTask(AbsTask):
             action=NestedDictAction,
             default=None,
             help="The keyword arguments for joint network class.",
+        )
+        # Added by Minwoo
+        group.add_argument(
+            "--auxiliary_conf",
+            action=NestedDictAction,
+            default=None,
+            help="The keyword arguments for auxiliary_conf class when joint network is using.",
         )
         group.add_argument(
             "--model_conf",
@@ -433,8 +442,16 @@ class ASRTask(AbsTask):
             preencoder = None
 
         # 4. Encoder
-        encoder_class = encoder_choices.get_class(args.encoder)
-        encoder = encoder_class(input_size=input_size, **args.encoder_conf)
+        if args.encoder == "transducer":
+            encoder_class = encoder_choices.get_class(args.encoder)
+            encoder = encoder_class(
+                input_size=input_size,
+                auxiliary_conf=args.auxiliary_conf,
+                **args.encoder_conf
+            )
+        else:
+            encoder_class = encoder_choices.get_class(args.encoder)
+            encoder = encoder_class(input_size=input_size, **args.encoder_conf)
 
         # 5. Post-encoder block
         # NOTE(kan-bayashi): Use getattr to keep the compatibility
@@ -460,7 +477,7 @@ class ASRTask(AbsTask):
 
             joint_network = JointNetwork(
                 vocab_size,
-                encoder.output_size(),
+                encoder_output_size,
                 decoder.dunits,
                 **args.joint_net_conf,
             )
@@ -490,6 +507,7 @@ class ASRTask(AbsTask):
             decoder=decoder,
             ctc=ctc,
             joint_network=joint_network,
+            auxiliary_conf=args.auxiliary_conf,
             token_list=token_list,
             **args.model_conf,
         )

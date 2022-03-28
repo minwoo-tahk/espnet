@@ -255,7 +255,6 @@ class BeamSearchTransducer:
         for enc_out_t in enc_out:
             hyps = kept_hyps
             kept_hyps = []
-
             while True:
                 max_hyp = max(hyps, key=lambda x: x.score)
                 hyps.remove(max_hyp)

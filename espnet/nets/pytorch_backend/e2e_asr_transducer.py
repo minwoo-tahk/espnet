@@ -503,8 +503,11 @@ class E2E(ASRInterface, torch.nn.Module):
         else:
             enc_out = self.encode_rnn(feats)
 
+        # print(f"enc_out: {enc_out} {enc_out.shape}")
+        # exit(0)
         nbest_hyps = beam_search(enc_out)
-
+        print(f"nbest_hyps: {nbest_hyps}")
+        exit(0)
         return [asdict(n) for n in nbest_hyps]
 
     def calculate_all_attentions(

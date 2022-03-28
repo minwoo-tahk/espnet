@@ -1119,6 +1119,10 @@ def recog(args):
             quantization=args.quantize_asr_model,
         )
 
+        # print(f"joint_network: {joint_network}")
+        # print(f"beam_search_transducer: {beam_search_transducer}")
+        # exit(0)
+
     if args.batchsize == 0:
         with torch.no_grad():
             for idx, name in enumerate(js.keys(), 1):

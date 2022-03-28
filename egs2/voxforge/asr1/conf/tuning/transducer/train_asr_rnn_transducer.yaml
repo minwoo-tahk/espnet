@@ -1,0 +1,51 @@
+max_epoch: 100
+# batch_type: folded
+batch_type: sorted
+batch_size: 24
+init: xavier_uniform
+patience: 5
+
+val_scheduler_criterion:
+- valid
+- loss
+best_model_criterion:
+-   - valid
+    - loss
+    - min
+keep_nbest_models: 1
+
+scheduler: reducelronplateau
+scheduler_conf:
+    mode: min
+    factor: 0.5
+    patience: 1
+
+optim: adadelta
+optim_conf:
+    lr: 1.0
+    rho: 0.95
+    eps: 1.0e-08
+    weight_decay: 0
+
+# encoder: vgg_rnn
+encoder: transducer
+encoder_conf:
+    rnn_type: lstm
+    bidirectional: true
+    use_projection: false
+    num_layers: 4
+    hidden_size: 320
+    output_size: 320
+    dropout: 0.4
+
+decoder: transducer
+decoder_conf:
+    rnn_type: lstm
+    num_layers: 1
+    hidden_size: 256
+    dropout_embed: 0.2
+    dropout: 0.2
+joint_net_conf:
+    joint_space_size: 256
+    joint_activation_type: tanh
+ 

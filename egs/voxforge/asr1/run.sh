@@ -22,11 +22,17 @@ do_delta=false
 
 # config files
 preprocess_config=conf/no_preprocess.yaml  # use conf/specaug.yaml for data augmentation
-train_config=conf/train.yaml
-decode_config=conf/decode.yaml
+# train_config=conf/train.yaml
+train_config=conf/tuning/transducer/train_rnn_transducer_aux.yaml
+# train_config=conf/tuning/transducer/train_rnn_transducer.yaml
+# train_config=conf/tuning/transducer/train_rnn_transducer_aux_batch_seq.yaml
+# train_config=conf/tuning/transducer/train_conformer-rnn_transducer_aux.yaml
+# decode_config=conf/decode.yaml
+decode_config=conf/tuning/transducer/decode_default.yaml
 
 # decoding parameter
-recog_model=model.acc.best # set a model to be used for decoding: 'model.acc.best' or 'model.loss.best'
+# recog_model=model.acc.best # set a model to be used for decoding: 'model.acc.best' or 'model.loss.best'
+recog_model=model.loss.best # set a model to be used for decoding: 'model.acc.best' or 'model.loss.best'
 
 # model average realted (only for transformer)
 n_average=10                 # the number of ASR models to be averaged
@@ -148,6 +154,7 @@ expdir=exp/${expname}
 mkdir -p ${expdir}
 
 if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
+        # --train-json ${feat_tr_dir}/data.json \
     echo "stage 3: Network Training"
     ${cuda_cmd} --gpu ${ngpu} ${expdir}/train.log \
         asr_train.py \
@@ -166,10 +173,12 @@ if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
         --train-json ${feat_tr_dir}/data.json \
         --valid-json ${feat_dt_dir}/data.json
 fi
+        # --train-json ${feat_tr_dir}/data.json \
 
 if [ ${stage} -le 4 ] && [ ${stop_stage} -ge 4 ]; then
     echo "stage 4: Decoding"
-    nj=16
+    # nj=16
+    nj=1
     if [[ $(get_yaml.py ${train_config} model-module) = *transformer* ]] || \
        [[ $(get_yaml.py ${train_config} model-module) = *conformer* ]] || \
        [[ $(get_yaml.py ${train_config} model-module) = *maskctc* ]] || \

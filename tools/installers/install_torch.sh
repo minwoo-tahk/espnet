@@ -56,10 +56,10 @@ install_torch(){
             # https://anaconda.org/anaconda/cudatoolkit/files
 
             # https://anaconda.org/nvidia/cudatoolkit/files
-            cudatoolkit_channel=nvidia
+            # cudatoolkit_channel=nvidia
 
             # https://anaconda.org/conda-forge/cudatoolkit/files
-            # cudatoolkit_channel=conda-forge
+            cudatoolkit_channel=conda-forge
 
             log conda install -y "pytorch=${torch_version}" "torchaudio=$1" "cudatoolkit=${cuda_version}" -c pytorch -c "${cudatoolkit_channel}"
             conda install -y "pytorch=${torch_version}" "torchaudio=$1" "cudatoolkit=${cuda_version}" -c pytorch -c "${cudatoolkit_channel}"

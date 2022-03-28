@@ -126,6 +126,7 @@ class Speech2Text:
                 beam_size=beam_size,
                 lm=scorers["lm"] if "lm" in scorers else None,
                 lm_weight=lm_weight,
+                nbest=nbest,
                 **transducer_conf,
             )
             beam_search = None
@@ -262,17 +263,22 @@ class Speech2Text:
             assert isinstance(hyp, (Hypothesis, TransHypothesis)), type(hyp)
 
             # remove sos/eos and get results
-            if isinstance(hyp.yseq, list):
-                token_int = hyp.yseq[1:-1]
+            if self.beam_search_transducer:
+                if isinstance(hyp.yseq, list):
+                    token_int = hyp.yseq[1:]
+                else:
+                    token_int = hyp.yseq[1:].tolist()
             else:
-                token_int = hyp.yseq[1:-1].tolist()
+                if isinstance(hyp.yseq, list):
+                    token_int = hyp.yseq[1:-1]
+                else:
+                    token_int = hyp.yseq[1:-1].tolist()
 
             # remove blank symbol id, which is assumed to be 0
             token_int = list(filter(lambda x: x != 0, token_int))
 
             # Change integer-ids to tokens
             token = self.converter.ids2tokens(token_int)
-
             if self.tokenizer is not None:
                 text = self.tokenizer.tokens2text(token)
             else:
